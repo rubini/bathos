@@ -154,13 +154,22 @@ int main(int argc, char **argv)
 	/* For each block of 4kB or 8kB: prepare, erase, write */
 	ssize = dev->type->sector_size;
 	for (pos = 0; pos < fsize; pos += ssize) {
+		int copysize = fsize - pos;
 
-		fprintf(stderr, "position 0x%05x:\n", pos);
+		if (copysize > ssize)
+			copysize = ssize;
+
+		/* align copysize to half-kB */
+		copysize = (copysize + 511) & ~511;
+
+		fprintf(stderr, "position 0x%05x, size %i:\n", pos, copysize);
 
 		sprintf(s, "P %i %i\r\n",
 			pos/ssize, pos/ssize);
 		reply = lpc_write_c(fd, s, 2); lpc_trim(reply);
 		fprintf(stderr, "   prepare: %s\n", reply);
+		if (reply[0] != '0')
+			return -1;
 
 		sprintf(s, "E %i %i\r\n",
 			pos/ssize, pos/ssize);
@@ -171,14 +180,18 @@ int main(int argc, char **argv)
 		}
 		lpc_trim(reply);
 		fprintf(stderr, "   erase: %s\n", reply);
+		if (reply[0] != '0')
+			return -1;
 
 		sprintf(s, "P %i %i\r\n",
 			pos/ssize, pos/ssize);
 		reply = lpc_write_c(fd, s, 2); lpc_trim(reply);
 		fprintf(stderr, "   prepare: %s\n", reply);
+		if (reply[0] != '0')
+			return -1;
 
 		sprintf(s, "C %i %lu %i\r\n", pos, dev->type->ram_addr + pos,
-			ssize);
+			copysize);
 		reply = lpc_write_c(fd, s, 2);
 		while (!reply) { /* copy takes time */
 			if (lpc_fd_gets(fd, s, sizeof(s)) > 0)
@@ -186,6 +199,8 @@ int main(int argc, char **argv)
 		}
 		lpc_trim(reply);
 		fprintf(stderr, "   copy: %s\n", reply);
+		if (reply[0] != '0')
+			return -1;
 	}
 
 	/* Force user flash on, or we'll read back ROM vectors */
