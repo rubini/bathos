@@ -26,4 +26,11 @@ extern int do_initcalls(void);
 #define task_initcall(fn)	__initcall("4", fn)
 #define late_initcall(fn)	__initcall("5", fn)
 
+#ifdef CONFIG_DEBUG_INITCALL
+#define debug_initcall 1
+#else
+#define debug_initcall 0
+#endif
+
+
 #endif /* __BATHOS_H__ */

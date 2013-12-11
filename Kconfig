@@ -78,3 +78,10 @@ config MEMORY_MODE
        default "-ram" if MMODE_RAM
        default "-flash" if MMODE_FLASH
        default ""
+
+
+config DEBUG
+       bool "Debug options (by adding printf statements, nothing more)"
+
+config DEBUG_INITCALL
+       bool "Debug initcalls at system startup" if DEBUG
