@@ -45,14 +45,16 @@ _entry_ram:
 /* ROM boot: put the stack before data (the lds puts data 1k into RAM) */
 .section .text.romboot
 _entry_rom:
-	/* FIXME: check flash speed */
+	/* We run at 15MHz (no PLL setup), so force flash access to 1 cycle */
+        ldr     r0, =0xe01fc004
+        mov     r1, #1
+        str     r1, [r0]
+
 	ldr	r0, =_sdata
+	sub	sp, r0, #4 /* stack is before data */
 	ldr	r1, =_edata
 	ldr	r2, =_erom
-	/* stack is before data */
-	mov	r3, r0
-	sub	r3, #4
-	mov	sp, r3
+
 	/* copy from r2 to r0, until r1. We know it's aligned at 16b */
 10:
 	cmp	r0, r1
