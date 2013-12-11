@@ -69,12 +69,20 @@ void generic_udelay(unsigned usec)
 	/* Sleep 10ms each time, to prevent overlfows */
 	const int step = 10 * 1000;
 	const int usec_per_jiffy = 1000 * 1000 / HZ;
+	const uint64_t jiffies_per_usec = (1LL<<32) / usec_per_jiffy;
 	const int count_per_step = udelay_lpj * step / usec_per_jiffy;
 
 	while (usec > step)  {
 		__delay(count_per_step);
 		usec -= step;
 	}
-	__delay(usec * udelay_lpj / usec_per_jiffy);
+	/*
+	 * We used to have this:
+	 *
+	 * __delay(usec * udelay_lpj / usec_per_jiffy);
+	 *
+	 * but we can't afford a 32-bit division" a 64-bit multiply is faster.
+	 */
+	__delay(((udelay_lpj * usec) * jiffies_per_usec) >> 32);
 }
 
