@@ -53,10 +53,14 @@ _entry_ram:
 /* ROM boot: put the stack before data (the lds puts data 1k into RAM) */
 .section .text.romboot
 _entry_rom:
-	ldr	r0, =_entry_rom + 1
-	ldr	r1, =_entry_save
-	str	r0, [r1]
-	/* FIXME: check flash speed */
+	/* Fix flash speed: we run at 12MHz, so 1 clock per access is ok */
+	ldr	r0, =0x4003C010
+	ldr	r1, [r0]
+	ldr	r2, =0xfffffffc
+	and	r1, r2		/* bits 31:2 must be written exactly as read */
+	mov	r2, #0		/* 0 == 1clock */
+	orr	r1, r2
+	str	r1, [r0]
 	ldr	r0, =_sdata
 	ldr	r1, =_edata
 	ldr	r2, =_erom
@@ -67,10 +71,18 @@ _entry_rom:
 	/* copy from r2 to r0, until r1. We know it's aligned at 16b */
 10:
 	cmp	r0, r1
-	bge	_bss_loop
+	bge	2f
 	ldmia	r2!, {r4, r5, r6, r7}
 	stmia	r0!, {r4, r5, r6, r7}
 	b	10b
+
+2:
+	/* Save the entry point */
+	ldr	r0, =_entry_rom + 1
+	ldr	r1, =_entry_save
+	str	r0, [r1]
+	b	_bss_loop
+
 .ltorg
 
 /* What follows is common to ROM and RAM boot: clear bss and call main */
