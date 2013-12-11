@@ -105,8 +105,8 @@ int main(int argc, char **argv)
 	memset(filebuf, 0xff, sizeof(filebuf));
 	fsize = fread(filebuf, 1, sizeof(filebuf), f);
 	size = (fsize + 899) / 900 * 900; /* a multiple of 20 lines */
-	if (size > dev->ram * 1024 - /* our offset into ram */ 1024)
-		errorexit(argv, "file size doesn't fit RAM\n"); /* FIXME: rom */
+	if (size > dev->rom * 1024)
+		errorexit(argv, "file size doesn't fit flash\n");
 	V("size is %i (xfer %i)\n", fsize, size);
 
 	/* checksum: the checksum vector is different for arm7 and cortex */
@@ -123,35 +123,7 @@ int main(int argc, char **argv)
 			run_addr = v[1] & ~1;
 	}
 
-	/* Write data to RAM */
-	sprintf(s, "W %lu %i\r\n", dev->type->ram_addr, size);
-	V("%s", s);
-	reply = lpc_write_c(fd, s, 2); /* echo and error code */
-	V("%s", reply);
-	check = 0;
-	for (ptr = filebuf, nline = 0, i = 0; i < size;) {
-		int j;
-		lpc_uuencode(ptr, 45, s);
-		V(".");
-		for (j=0; j<45; j++)
-			check += ptr[j];
-		strcat(s, "\r\n");
-		lpc_write_c(fd, s, 1);
-		ptr += 45; i += 45;
-		nline++;
-		if (nline && nline%20 == 0) {
-			/* print checksum read OK */
-			sprintf(s, "%li\r\n", check); check = 0;
-			reply = lpc_write_c(fd, s, 2);
-			V("%s", reply); /* OK Hopefully */
-		}
-	}
-
-	/* hopefully, everything worked. Now unlock */
-	sprintf(s, "U 23130\r\n");
-	lpc_write_c(fd, s, 2);
-
-	/* For each block of 4kB or 8kB: prepare, erase, write */
+	/* For each block of 4kB or 8kB: copy to ram, prepare, erase, write */
 	ssize = dev->type->sector_size;
 	for (pos = 0; pos < fsize; pos += ssize) {
 		int copysize = fsize - pos;
@@ -159,10 +131,39 @@ int main(int argc, char **argv)
 		if (copysize > ssize)
 			copysize = ssize;
 
-		/* align copysize to half-kB */
-		copysize = (copysize + 511) & ~511;
+		/* copysize should also better be a multiple of 20 lines */
+		copysize = (copysize + 899) / 900 * 900;
 
-		fprintf(stderr, "position 0x%05x, size %i:\n", pos, copysize);
+		/* Write data to RAM */
+		sprintf(s, "W %lu %i\r\n", dev->type->ram_addr, copysize);
+		V("%s", s);
+		reply = lpc_write_c(fd, s, 2); /* echo and error code */
+		V("%s", reply);
+		check = 0;
+		for (ptr = filebuf + pos, nline = 0, i = 0; i < copysize;) {
+			int j;
+			lpc_uuencode(ptr, 45, s);
+			V(".");
+			for (j=0; j<45; j++)
+				check += ptr[j];
+			strcat(s, "\r\n");
+			lpc_write_c(fd, s, 1);
+			ptr += 45; i += 45;
+			nline++;
+			if (nline && nline%20 == 0) {
+				/* print checksum read OK */
+				sprintf(s, "%li\r\n", check); check = 0;
+				reply = lpc_write_c(fd, s, 2);
+				V("%s", reply); /* OK Hopefully */
+			}
+		}
+
+		/* hopefully, everything worked. Now unlock */
+		sprintf(s, "U 23130\r\n");
+		lpc_write_c(fd, s, 2);
+
+		fprintf(stderr, "position 0x%05x, size %i:\n", pos,
+			copysize > ssize ? ssize : copysize);
 
 		sprintf(s, "P %i %i\r\n",
 			pos/ssize, pos/ssize);
@@ -190,8 +191,8 @@ int main(int argc, char **argv)
 		if (reply[0] != '0')
 			return -1;
 
-		sprintf(s, "C %i %lu %i\r\n", pos, dev->type->ram_addr + pos,
-			copysize);
+		sprintf(s, "C %i %lu %i\r\n", pos, dev->type->ram_addr,
+			ssize /* whole sector */);
 		reply = lpc_write_c(fd, s, 2);
 		while (!reply) { /* copy takes time */
 			if (lpc_fd_gets(fd, s, sizeof(s)) > 0)
