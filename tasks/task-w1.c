@@ -9,6 +9,7 @@ static int w1_init(void *arg)
 	struct w1_dev *dev;
 	int i, ndev;
 
+	gpio_init();
 	ndev = w1_scan_bus(bus);
 	printf("%s: scan result: %i devices\n", __func__, ndev);
 	for (i = 0; i < ndev; i++) {
