@@ -1,6 +1,7 @@
 #ifndef __JIFFIES_H__
 #define __JIFFIES_H__
 #include <arch/bathos-arch.h>
+#include <bathos/io.h> /* for HZ, needed by most jiffies users */
 /*
  * The architecture may define __get_jiffies if the hardware doesn't
  * provide a single 32-bit increasing counter at some address
