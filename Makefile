@@ -71,6 +71,8 @@ LDFLAGS += $(shell $(CC) $(CFLAGS) --print-libgcc-file-name)
 # live in tasks-$(ARCH), to allow similar but different implementations
 TOBJ := $(patsubst %, tasks/%, $(TASK-y))
 TOBJ := $(patsubst tasks/arch/%, tasks-$(ARCH)/%, $(TOBJ))
+# Finally, some tasks are specifically in tests/
+TOBJ := $(patsubst tasks/test-%, tests/test-%, $(TOBJ))
 VPATH := tasks-$(ARCH)
 
 # Generic flags
