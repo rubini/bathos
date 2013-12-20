@@ -313,7 +313,7 @@ int enc28_send(struct enc28_dev *dev, const u8 *packet, int len)
 
 int enc28_recv(struct enc28_dev *dev, u8 *packet, int maxlen)
 {
-	int len, next;
+	int16_t len, next;
 	u8 rxstat[6] __attribute__((aligned(2)));
 
 	/* NOTE: checking IR_PKTIF doesn't work (B4 errata, point 6) */
@@ -327,8 +327,8 @@ int enc28_recv(struct enc28_dev *dev, u8 *packet, int maxlen)
 	/* Read in the preamble: next packet pointer and status vector */
 	__enc28_rd_buf(dev, rxstat, sizeof(rxstat));
 
-	next = rxstat[0] | (rxstat[1]<<16);
-	len = rxstat[2] | (rxstat[3]<<16);
+	next = rxstat[0] | (rxstat[1]<<8);
+	len = rxstat[2] | (rxstat[3]<<8);
 	len -= 4; /* ignore crc */
 	if (len > maxlen)
 		len = maxlen;
