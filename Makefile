@@ -45,7 +45,10 @@ CFLAGS += -include include/generated/autoconf.h
 LDS   = $(wildcard $(ADIR)/bathos$(MODE).lds)
 
 # Lib objects and flags
-LOBJ = pp_printf/printf.o pp_printf/vsprintf-xint.o
+LOBJ-y = pp_printf/printf.o
+LOBJ-$(CONFIG_PRINTF_FULL) += pp_printf/vsprintf-full.o
+LOBJ-$(CONFIG_PRINTF_XINT) += pp_printf/vsprintf-xint.o
+
 CFLAGS  += -Ipp_printf -DCONFIG_PRINT_BUFSIZE=256
 
 # Use our own linker script, if it exists
@@ -82,7 +85,7 @@ bathos.bin: bathos
 bathos: bathos.o
 	$(CC) bathos.o $(LDFLAGS) -o $@
 
-obj-y =  main.o $(AOBJ) $(TOBJ) $(LOBJ) $(LIBARCH) $(LIBS)
+obj-y =  main.o $(AOBJ) $(TOBJ) $(LOBJ-y) $(LIBARCH) $(LIBS)
 
 bathos.o: silentoldconfig $(obj-y)
 	$(LD) -r -T bigobj.lds $(obj-y) -o $@

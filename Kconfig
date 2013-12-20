@@ -54,6 +54,14 @@ config CROSS_COMPILE
        default "avr-" if ARCH_ATMEGA
        default ""
 
+config PRINTF_FULL
+       bool
+       default y if ARCH_ATMEGA
+
+config PRINTF_XINT
+       bool
+       default !PRINTF_FULL
+
 choice
 	prompt "Memory mode"
 
