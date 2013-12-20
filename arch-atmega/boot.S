@@ -68,6 +68,5 @@ __do_clear_bss:
 	
 1:	/* Finally, run real code */
 	rcall bathos_setup
-	sei
 	rcall bathos_main
 	rjmp _bathos_start

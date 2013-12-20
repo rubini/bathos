@@ -1,8 +1,9 @@
 #include <bathos/bathos.h>
+#include <bathos/init.h>
 #include <bathos/io.h>
 #include <arch/hw.h>
 
-int bathos_setup(void)
+static int uart_setup(void)
 {
 	/* This setup function should configure the uart pins and clock */
 
@@ -19,14 +20,21 @@ int bathos_setup(void)
 	regs[REG_UCSRC] = REG_UCSRC_URSEL | REG_UCSRC_UCSZ1 | REG_UCSRC_UCSZ0;
 	regs[REG_UCSRA] = REG_UCSRA_UDRE | REG_UCSRA_U2X;
 	regs[REG_UCSRB] = REG_UCSRB_TXEN;
+	return 0;
+}
+rom_initcall(uart_setup);
 
-	/* similarly, set up the timer: use 256 as a prescaler, and irq */
+/* set up the timer: use 256 as a prescaler, and irq */
+static int timer_setup(void)
+{
 	regs[REG_TCCR0] = REG_TCCR0_P256;
 	regs[REG_TIMSK] = REG_TIMSK_TOIE0;
 
-	/* Interrupts are enabled by the calling assembly code */
+	asm("sei"); /* enable interrupts */
 	return 0;
 }
+core_initcall(timer_setup); /* before lpj calculation */
+
 
 void putc(int c)
 {
