@@ -87,7 +87,7 @@ bathos.bin: bathos
 bathos: bathos.o
 	$(CC) bathos.o $(LDFLAGS) -o $@
 
-obj-y =  main.o $(AOBJ) $(TOBJ) $(LOBJ-y) $(LIBARCH) $(LIBS)
+obj-y =  main.o init.o $(AOBJ) $(TOBJ) $(LOBJ-y) $(LIBARCH) $(LIBS)
 
 bathos.o: silentoldconfig $(obj-y)
 	$(LD) -r -T bigobj.lds $(obj-y) -o $@
