@@ -3,6 +3,7 @@
  * Alessandro Rubini, 2011-2012GNU GPL2 or later
  */
 #include <bathos/types.h>
+#include <bathos/init.h>
 #include <bathos/io.h>
 #include <arch/hw.h>
 
@@ -36,14 +37,24 @@ static u16 gpio_weird[] = {
 };
 
 /*
+ * Initialization of the clock is done at initcall time, so it's automatic
+ * whenever a function from this file is used by the application
+ */
+static int hw_gpio_init(void)
+{
+	regs[REG_AHBCLKCTRL] |= REG_AHBCLKCTRL_GPIO | REG_AHBCLKCTRL_IOCON;
+	return 0;
+}
+device_initcall(hw_gpio_init);
+
+/*
  * What follows is the public interface.
  * Note that only gpio_dir_af() checks the gpio is valid. Other
  * functions are expected to be called often and only after setting the mode.
  */
-void gpio_init(void)
-{
-	regs[REG_AHBCLKCTRL] |= REG_AHBCLKCTRL_GPIO | REG_AHBCLKCTRL_IOCON;
-}
+
+/* This is a documented part of the API, so offer it */
+void gpio_init(void) {}
 
 void gpio_dir(int gpio, int output, int value)
 {
