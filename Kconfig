@@ -93,3 +93,6 @@ config DEBUG
 
 config DEBUG_INITCALL
        bool "Debug initcalls at system startup" if DEBUG
+
+config VERBOSE_TASK_INIT
+       bool "Print more information at task initialization" if DEBUG

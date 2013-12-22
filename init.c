@@ -1,8 +1,7 @@
 /* Alessandro Rubini 2009-2013, GNU GPL2 or later */
 #include <bathos/bathos.h>
 #include <bathos/init.h>
-
-#define config_verbose_task_init 0
+#include <bathos/debug.h>
 
 static int init_tasks(void)
 {
@@ -17,7 +16,7 @@ static int init_tasks(void)
 			ret = p->init(p->arg);
 		if (ret)
 			printf(": init error");
-		if (config_verbose_task_init) {
+		if (VERBOSE_TASK_INIT) {
 			printf(" (%p, job %p, period %li, release %li)",
 			       p, p->job, p->period, p->release);
 		}
