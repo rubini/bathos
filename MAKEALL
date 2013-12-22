@@ -33,7 +33,7 @@ for c in $configs; do
     fi
     make -s clean
     # build binaries and log
-    if ! make -j5 -s > $TMPLOG 2>&1; then
+    if ! make -s > $TMPLOG 2>&1; then
 	cat $TMPLOG
 	echo "Build error (see $B)"
 	remove_tmp_b=false
