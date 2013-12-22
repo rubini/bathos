@@ -6,7 +6,7 @@
 #include <bathos/jiffies.h>
 #include <arch/hw.h>
 
-int bathos_main(void)
+void __attribute__((noreturn)) bathos_main(void)
 {
 	struct bathos_task *p;
 	unsigned long now;
@@ -28,5 +28,4 @@ int bathos_main(void)
 		t->arg = t->job(t->arg);
 		t->release += t->period;
 	}
-	return 0;
 }

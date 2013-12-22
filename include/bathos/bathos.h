@@ -20,7 +20,7 @@
 
 
 /* Other misc bathos stuff */
-extern int bathos_main(void);
+extern void bathos_main(void);
 extern int bathos_setup(void);
 
 /* And finally the task definition */
