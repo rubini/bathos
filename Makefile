@@ -40,6 +40,7 @@ CFLAGS += $(USER_CFLAGS)
 
 # Kconfig output
 CFLAGS += -include include/generated/autoconf.h
+ASFLAGS += -include include/generated/autoconf.h
 
 # There may or may not be a linker script (arch-unix doesn't)
 LDS   = $(wildcard $(ADIR)/bathos$(MODE).lds)
@@ -77,6 +78,7 @@ VPATH := tasks-$(ARCH)
 
 # Generic flags
 CFLAGS  += -Iinclude -I$(ADIR)
+ASFLAGS  += -Iinclude -I$(ADIR)
 CFLAGS  += -g -Wall -ffreestanding -Os
 ASFLAGS += -g -Wall
 
