@@ -17,7 +17,6 @@ fi
 
 # qemu: use telnet as serial port (stdio doesn't always work, don't know why)
 qemu-system-arm -m 64 -M versatilepb -kernel /dev/null -nographic -S -s \
-    -monitor tcp::1201 \
     -serial  tcp::1200,server &
 qemu=$!
 
