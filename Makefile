@@ -32,6 +32,9 @@ STRIP           = $(CROSS_COMPILE)strip
 OBJCOPY         = $(CROSS_COMPILE)objcopy
 OBJDUMP         = $(CROSS_COMPILE)objdump
 
+# Only arch-unix needs $(CC) for final link
+ARCH-FINAL-LD  ?= $(LD)
+
 # Files that depend on the architecture (bathos.lds may be missing)
 AOBJ  = $(ADIR)/boot.o $(ADIR)/io.o
 
@@ -86,8 +89,9 @@ ASFLAGS += -g -Wall
 bathos.bin: bathos
 	$(OBJCOPY) -O binary $^ $@
 
+# Final link is done with $(LD) or $(CC)
 bathos: bathos.o
-	$(CC) bathos.o $(LDFLAGS) -o $@
+	$(ARCH-FINAL-LD) bathos.o $(LDFLAGS) -o $@
 
 obj-y =  main.o init.o $(AOBJ) $(TOBJ) $(LOBJ-y) $(LIBARCH) $(LIBS)
 
