@@ -2,7 +2,7 @@ SECTIONS
 {
 	.rodata : {
 		*(.rodata);
-		. = ALIGN(4);
+		. = ALIGN(8);
 		initcall_begin = .;
 		*(.init1);
 		*(.init2);
