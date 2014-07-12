@@ -96,3 +96,6 @@ config DEBUG_INITCALL
 
 config VERBOSE_TASK_INIT
        bool "Print more information at task initialization" if DEBUG
+
+config VERBOSE_LCD44780
+       bool "Print more information at lcd44780 initialization" if DEBUG
