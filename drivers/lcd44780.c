@@ -6,7 +6,7 @@
 #include <bathos/delay.h>
 #include <arch/gpio.h>
 
-#define DELAY_VAL 1
+#define DELAY_CLK 2
 
 /* Local helper: write 4 bits */
 static void lcd44780_nibble(struct lcd44780 *lcd, int nibble)
@@ -14,11 +14,11 @@ static void lcd44780_nibble(struct lcd44780 *lcd, int nibble)
 	int i;
 	for (i = 0; i < 4; i++)
 		gpio_set(lcd->gpio[LCD44780_D4 + i], nibble & (1 << i));
-	udelay(DELAY_VAL);
+	udelay(DELAY_CLK);
 	gpio_set(lcd->gpio[LCD44780_E], 1);
-	udelay(DELAY_VAL);
+	udelay(DELAY_CLK);
 	gpio_set(lcd->gpio[LCD44780_E], 0);
-	udelay(DELAY_VAL);
+	udelay(DELAY_CLK);
 }
 
 /* RS =  0: instruction, 1: data */
@@ -30,27 +30,34 @@ static void lcd44780_w_byte(struct lcd44780 *lcd, int byte, int rs)
 	lcd44780_nibble(lcd, byte >> 0);
 }
 
-static int lcd44780_is_busy(struct lcd44780 *lcd)
+static int lcd44780_is_busy(struct lcd44780 *lcd, int cmd)
 {
 	int ret;
 
-	return 0; /* The stuff below is not working, it seems */
+	/* We can check busy only if R/W is connected */
+	if (lcd->gpio[LCD44780_RW] < 0) {
+		/* go-home take 1.52ms under some clock: use 2ms */
+		if (cmd == 0x02)
+			udelay(2000);
+		else
+			udelay(50);
+		return 0;
+	}
 
 	gpio_set(lcd->gpio[LCD44780_RW], 1); /* read */
 	gpio_set(lcd->gpio[LCD44780_RS], 0);
 	/* mv D7 temporarily to input mode */
 	gpio_dir(lcd->gpio[LCD44780_D7], 0, 0);
 	gpio_set(lcd->gpio[LCD44780_E], 1);
-	udelay(DELAY_VAL);
+	udelay(DELAY_CLK);
 	gpio_set(lcd->gpio[LCD44780_E], 0);
 	ret = gpio_get(lcd->gpio[LCD44780_D7]);
-	udelay(DELAY_VAL);
+	udelay(DELAY_CLK);
 	/* 4-bit mode: one more shot */
 	gpio_set(lcd->gpio[LCD44780_E], 1);
-	udelay(DELAY_VAL);
+	udelay(DELAY_CLK);
 	gpio_set(lcd->gpio[LCD44780_E], 0);
-	udelay(DELAY_VAL);
-	printf("busy %i\n", ret);
+	udelay(DELAY_CLK);
 	/* back to output */
 	gpio_dir(lcd->gpio[LCD44780_D7], 1, 0);
 	return ret;
@@ -61,7 +68,7 @@ int lcd44780_cmd(struct lcd44780 *lcd, int cmd)
 	if (VERBOSE_LCD44780)
 		printf("%s: %02x\n", __func__,  cmd);
 	lcd44780_w_byte(lcd, cmd, 0);
-	while (lcd44780_is_busy(lcd))
+	while (lcd44780_is_busy(lcd, cmd))
 		;
 	return 0;
 }
