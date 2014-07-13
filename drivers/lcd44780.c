@@ -6,7 +6,7 @@
 #include <bathos/delay.h>
 #include <arch/gpio.h>
 
-#define DELAY_VAL 2
+#define DELAY_VAL 1
 
 /* Local helper: write 4 bits */
 static void lcd44780_nibble(struct lcd44780 *lcd, int nibble)
@@ -34,13 +34,16 @@ static int lcd44780_is_busy(struct lcd44780 *lcd)
 {
 	int ret;
 
+	return 0; /* The stuff below is not working, it seems */
+
 	gpio_set(lcd->gpio[LCD44780_RW], 1); /* read */
+	gpio_set(lcd->gpio[LCD44780_RS], 0);
 	/* mv D7 temporarily to input mode */
 	gpio_dir(lcd->gpio[LCD44780_D7], 0, 0);
 	gpio_set(lcd->gpio[LCD44780_E], 1);
 	udelay(DELAY_VAL);
-	ret = gpio_get(lcd->gpio[LCD44780_D7]);
 	gpio_set(lcd->gpio[LCD44780_E], 0);
+	ret = gpio_get(lcd->gpio[LCD44780_D7]);
 	udelay(DELAY_VAL);
 	/* 4-bit mode: one more shot */
 	gpio_set(lcd->gpio[LCD44780_E], 1);
@@ -59,7 +62,7 @@ int lcd44780_cmd(struct lcd44780 *lcd, int cmd)
 		printf("%s: %02x\n", __func__,  cmd);
 	lcd44780_w_byte(lcd, cmd, 0);
 	while (lcd44780_is_busy(lcd))
-		break; /* FIXME */
+		;
 	return 0;
 }
 
@@ -104,20 +107,28 @@ int lcd44780_init(struct lcd44780 *lcd)
 		gpio_dir_af(lcd->gpio[i], 1, 0, 0); /* output, value, af */
 	}
 
-	/* Now, set to 4 bit operation -- rs == 0 is ok */
+	/*
+	 * Trick: force to 8-bit mode, in a way that works in both modes.
+	 * This allows the same code to run after hw reset and after sw reset.
+	 * However, we had an enable pulse, so we are 4-bit bout out of phase.
+	 * Thus, do it twice: if the second is lost, the second is caught.
+	 */
+	lcd44780_cmd(lcd, 0x33);
+	lcd44780_cmd(lcd, 0x33);
+
+	/* Now, we are 8-bit mode for sure, go on, set 4-bit mode */
 	if (VERBOSE_LCD44780)
 		printf("setting to 4 bit mode (assume it is reset)\n");
 	lcd44780_nibble(lcd, 0x2);
 
-	/* again, now we are 4-bits, continue writing bytes */
+	/* We are now 4-bits, and synced. Continue the setup */
 	if (VERBOSE_LCD44780)
 		printf("go on setting stuff...");
 	lcd44780_cmd(lcd, 0x20); /* again 4 bits, 2 lines, etc */
-	printf("%s: %i\n", __func__, __LINE__);
 	lcd44780_cmd(lcd, 0x0c); /* turn on, etc */
-	printf("%s: %i\n", __func__, __LINE__);
 	lcd44780_cmd(lcd, 0x06); /* entry mode */
-	printf("%s: %i\n", __func__, __LINE__);
+	lcd44780_cmd(lcd, 0x01); /* clear the screen */
+
 	if (VERBOSE_LCD44780)
 		printf("done\n");
 	return 0;
