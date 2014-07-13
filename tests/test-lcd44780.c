@@ -30,28 +30,31 @@ static int lcd_test_init(void *arg)
 	gpio_dir_af(30, 1, 1, 0); /* lcd power */
 	gpio_dir_af(16, 1, 1, 0); /* lcd backlight */
 	lcd44780_init(lcd);
-	printf("...\n");
 	return 0;
 }
 
 static void *lcd_test(void *arg)
 {
 	struct lcd44780 *lcd = arg;
-	u8 s[8];
-	static int t;
+	char str[16];
+	static int s, m, h;
 
-	sprintf((char *)s, "%05x", t++ & 0xfffff);
-	if (t % 10 == 0)
-		printf("%s: write %s\n", __func__, s);
+	sprintf(str, "%02i:%02i:%02i", h, m, s);
 	lcd44780_cmd(lcd, 0x2); /* home */
-	lcd44780_data(lcd, s, 5);
+	lcd44780_data(lcd, (void *)str, strlen(str));
+	s = (s + 1) % 60;
+	if (!s) {
+		m = (m + 1) % 60;
+		if (!m)
+			h = (h + 1) % 100;
+	}
 	return arg;
 }
 
 static struct bathos_task __task t_lcd = {
 	.name ="lcd-test",
-	.period = HZ/2,
-	.release = HZ/2,
+	.period = HZ,
+	.release = 0,
 	.init = lcd_test_init,
 	.job = lcd_test,
 	.arg = &lcd_instance,
