@@ -33,7 +33,7 @@
 
 @setchapternewpage off
 
-@set update-month November 2013
+@set update-month July 2014
 @c @set release v2012-12
 
 @finalout
@@ -2274,12 +2274,32 @@ the bit-banged I2C driver, while arch-specific
 code using hardware I2C controllers lives in the respective @t{arch}
 directory.
 
-Here I also host the @t{enc28j60} driver. The chip
-is a 10Mb Ethernet controller, connected through SPI.  The driver
-offers @i{create} and @i{destroy} functions, so the specific application
-can drive more than one device, if needed.  The header @t{<bathos/enc28j60.h>}
-should be enough to understand how this works, with the help of
-the sample task @t{tasks/task-enc28.c}.
+This is the current list of drivers:
+
+@table @code
+
+@item enc28j60
+
+	The chip is a 10Mb Ethernet controller, connected through SPI.
+        The driver offers @i{create} and @i{destroy} functions, so the
+        specific application can drive more than one device, if
+        needed.  The header @t{<bathos/enc28j60.h>} should be enough
+        to understand how this works, with the help of the sample task
+        @t{tasks/task-enc28.c}.
+
+@item OneWire
+
+	See @ref{OneWire}.
+
+@item lcd44780
+
+	This is the classical LCD display, typicall sold as 16x2 ASCII
+        characters, connected on a 4-bit data bus, plus control signals.
+        The driver currently only supports 4-bit mode.  The user must
+        tell which GPIO lines are connected to the display. Please see
+        @t{tests/test-lcd44780.c} for an example use.
+
+@end table
 
 @c ##########################################################################
 @node Lib
