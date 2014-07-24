@@ -1,6 +1,14 @@
 #ifndef __BATHOS_GPIO_H__
 #define __BATHOS_GPIO_H__
 
+/* for gpio_dir() and gpio_dir_af() */
+#define GPIO_DIR_IN	0
+#define GPIO_DIR_OUT	1
+
+/* for gpio_dir_af()  */
+#define GPIO_AF_GPIO	0
+#define GPIO_AF(x)	x
+
 #ifdef CONFIG_HAS_GPIO
 #include <arch/gpio.h>
 #else

@@ -28,8 +28,8 @@ static int uart_setup(void)
 	regs[REG_AHBCLKCTRL] |= REG_AHBCLKCTRL_IOCON | REG_AHBCLKCTRL_GPIO;
 
 	/* First fix pin configuration */
-	gpio_dir_af(GPIO_NR(1, 6), 0, 0, 1); /* port 1-6: rx */
-	gpio_dir_af(GPIO_NR(1, 7), 1, 0, 1); /* port 1-7: tx */
+	gpio_dir_af(GPIO_NR(1, 6), GPIO_DIR_IN,  0, GPIO_AF(1)); /* 1-6: rx */
+	gpio_dir_af(GPIO_NR(1, 7), GPIO_DIR_OUT, 0, GPIO_AF(1)); /* 1-7: tx */
 
 	/*
 	 * The clock divider must be set before turning on the clock.

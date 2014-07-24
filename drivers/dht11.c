@@ -11,7 +11,7 @@ int dht11_init(void *arg)
 {
 	struct dht11 *d = arg;
 
-	gpio_dir_af(d->gpio, 0, 0, 0); /* input, AF 0 */
+	gpio_dir_af(d->gpio, GPIO_DIR_IN, 0, GPIO_AF_GPIO);
 	d->flags &= ~DHT11_FLAG_VALID;
 	if (d->flags & DHT11_FLAG_VERBOSE)
 		printf("%s: initialized GPIO %i (0x%x)\n", __func__,
@@ -72,10 +72,10 @@ void *dht11_job(void *arg)
 	int i, ck = 0;
 
 	/* Start pulse: 18ms minimum */
-	gpio_dir(gpio, 1, 0);
+	gpio_dir(gpio, GPIO_DIR_OUT, 0);
 	for (i = 0; i < 18; i++)
 		udelay(1000);
-	gpio_dir(gpio, 0, 0); /* input */
+	gpio_dir(gpio, GPIO_DIR_IN, 0); /* input */
 
 	/* Wait for the bit to become low, and high; this is the ack pulse */
 	if (waitbit(gpio, 0) || waitbit(gpio, 1)) {

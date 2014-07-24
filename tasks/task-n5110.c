@@ -52,19 +52,19 @@ static int lcd_task_init(void *arg)
 	struct spi_dev *dev = arg;
 
 	printf("%s: %i\n", __func__, __LINE__);
-	/* My board other devices on SPI: disable their CS */
-	gpio_dir_af(GPIOCS_NO0, 1, 1, 0);
+	/* My board has other devices on SPI: disable their CS */
+	gpio_dir_af(GPIOCS_NO0, GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
 	gpio_set(GPIOCS_NO0, 1);
-	gpio_dir_af(GPIOCS_NO1, 1, 1, 0);
+	gpio_dir_af(GPIOCS_NO1, GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
 	gpio_set(GPIOCS_NO1, 1);
 	/* This is our gpio and the reset */
-	gpio_dir_af(GPIOCS, 1, 1, 0);
+	gpio_dir_af(GPIOCS, GPIO_DIR_OUT, 1, GPIO_AF_GPIO);;
 	gpio_set(GPIOCS, 1);
-	gpio_dir_af(13, 1, 1, 0);
+	gpio_dir_af(13, GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
 	gpio_set(13, 1);
 
 	/* d/c */
-	gpio_dir_af(GPIODC, 1, 1, 0);
+	gpio_dir_af(GPIODC, GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
 	gpio_set(GPIODC, 1);
 
 	spi_create(&spi_dev);

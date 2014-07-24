@@ -25,8 +25,8 @@ static int uart_setup(void)
 	unsigned int val;
 
 	/* First fix pin configuration */
-	gpio_dir_af(GPIO_NR(0, 0), 1, 0, 1); /* port 0-0: tx */
-	gpio_dir_af(GPIO_NR(0, 1), 0, 0, 1); /* port 0-1: rx */
+	gpio_dir_af(GPIO_NR(0, 0), GPIO_DIR_OUT, 0, GPIO_AF(1)); /* 0-0: tx */
+	gpio_dir_af(GPIO_NR(0, 1), GPIO_DIR_IN,  0, GPIO_AF(1)); /* 0-1: rx */
 
 	/* Disable interrupts and clear pending interrupts */
 	regs[REG_U0IER] = 0;

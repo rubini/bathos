@@ -27,8 +27,8 @@ static int lcd_test_init(void *arg)
 {
 	struct lcd44780 *lcd = arg;
 
-	gpio_dir_af(30, 1, 1, 0); /* lcd power */
-	gpio_dir_af(16, 1, 1, 0); /* lcd backlight */
+	gpio_dir_af(30, GPIO_DIR_OUT, 1, GPIO_AF_GPIO); /* lcd power */
+	gpio_dir_af(16,  GPIO_DIR_OUT, 1, GPIO_AF_GPIO); /* lcd backlight */
 	lcd44780_init(lcd);
 	return 0;
 }

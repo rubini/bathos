@@ -10,9 +10,9 @@
 static int led_init(void *unused)
 {
 	gpio_init();
-	gpio_dir_af(19, 1, 0, 0);
-	gpio_dir_af(20, 1, 0, 0);
-	gpio_dir_af(21, 1, 0, 0);
+	gpio_dir_af(19, GPIO_DIR_OUT, 0, GPIO_AF_GPIO);
+	gpio_dir_af(20, GPIO_DIR_OUT, 0, GPIO_AF_GPIO);
+	gpio_dir_af(21, GPIO_DIR_OUT, 0, GPIO_AF_GPIO);
 	return 0;
 }
 

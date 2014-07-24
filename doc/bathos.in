@@ -1872,7 +1872,8 @@ The LED tasks have been modified to use this API.
 @item int gpio_dir_af(int gpio, int output, int value, int afnum);
 @itemx int gpio_dir(int gpio, int output, int value);
 	The former function sets the alternate function for a bit, and it
-	configures it as input or output.
+	configures it as input or output. We have macros for the values,
+        see below.
 	The latter function only changes the direction (this is useful
 	since changing the mode is much more costly in term of machine
 	instructions. The @i{value} argument is needed to change the
@@ -1894,6 +1895,23 @@ The LED tasks have been modified to use this API.
         while the latter receives 0 or the bit value -- i.e., the same
         value that is returned by @i{__gpio_get}, to save a few
         instructions in some common situations, 
+@end table
+
+The following macros are offered, because I used to forget the meaning
+of the numbers. The idea is that code should be self-documenting, so
+you should use those names and ease your reader (or yourself in the
+future).
+
+@table @code
+@item GPIO_DIR_IN
+@item GPIO_DIR_OUT
+
+	0 and 1, for @t{output} argument for @t{gpio_dir} and @t{gpio_dir_af}.
+
+@item GPIO_AF_GPIO
+@item GPIO_AF(value)
+
+	The former is 0; both are for @t{gpio_dir_af}.
 @end table
 
 @c ==========================================================================

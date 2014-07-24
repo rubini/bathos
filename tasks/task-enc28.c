@@ -40,10 +40,10 @@ static struct enc28_dev enc28_dev = {
 static int enc28_task_init(void *unused)
 {
 	/* My board has another device on SPI: disable its CS on gpio 9*/
-	gpio_dir_af(9, 1, 1, 0);
+	gpio_dir_af(9,  GPIO_DIR_OUT, 1, GPIO_AF_GPIO);;
 	gpio_set(9, 1);
 	/* This is our gpio 10 */
-	gpio_dir_af(10, 1, 1, 0);
+	gpio_dir_af(10, GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
 	gpio_set(10, 1);
 
 	enc28_create(&enc28_dev);

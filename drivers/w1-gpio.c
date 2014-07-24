@@ -11,11 +11,11 @@
 /* Private methods for acting on bits */
 static inline void set_w1_gpio(int gpio, int value)
 {
-	gpio_dir(gpio, 0, 0); /* input for 5usec (recover prev bit) */
-	udelay(5);
-	gpio_dir(gpio, 1, 0); /* output low */
+	gpio_dir(gpio, GPIO_DIR_IN, 0);
+	udelay(5); /* input for 5usec (recover prev bit) */
+	gpio_dir(gpio, GPIO_DIR_OUT, 0); /* output low */
 	udelay(value ? 1 : 60);
-	gpio_dir(gpio, 0, 0); /* input again */
+	gpio_dir(gpio, GPIO_DIR_IN, 0); /* input again */
 	udelay(value ? 60 : 1);
 }
 
@@ -25,7 +25,7 @@ static inline int get_w1_gpio(int gpio)
 
 	gpio_dir(gpio, 1, 0); /* output low */
 	udelay(1);
-	gpio_dir(gpio, 0, 0); /* input (pull up) */
+	gpio_dir(gpio, GPIO_DIR_IN, 0); /* input (pull up) */
 	udelay(9);
 	ret = gpio_get(gpio);
 	udelay(60);
@@ -37,10 +37,10 @@ static int w1_gpio_reset(struct w1_bus *bus)
 {
 	int ret;
 
-	gpio_dir_af(bus->detail, 0, 0, 0); /* input, novalue, af = 0 */
-	gpio_dir(bus->detail, 1, 0); /* low pulse */
-	udelay(480);
-	gpio_dir(bus->detail, 0, 0); /* input */
+	gpio_dir_af(bus->detail, GPIO_DIR_IN, 0, GPIO_AF_GPIO);
+	gpio_dir(bus->detail, GPIO_DIR_OUT, 0);
+	udelay(480); /* low pulse */
+	gpio_dir(bus->detail, GPIO_DIR_IN, 0);
 	udelay(100);
 	ret = !gpio_get(bus->detail); /* 0 == present */
 	udelay(480);

@@ -10,10 +10,10 @@ static int led_init(void *unused)
 {
 	gpio_init();
 	/* all bits 1 == led off */
-	gpio_dir_af(GPIO_NR(3, 0), 1, 1, 0);
-	gpio_dir_af(GPIO_NR(3, 1), 1, 1, 0);
-	gpio_dir_af(GPIO_NR(3, 2), 1, 1, 0);
-	gpio_dir_af(GPIO_NR(3, 3), 1, 1, 0);
+	gpio_dir_af(GPIO_NR(3, 0), GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
+	gpio_dir_af(GPIO_NR(3, 1), GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
+	gpio_dir_af(GPIO_NR(3, 2), GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
+	gpio_dir_af(GPIO_NR(3, 3), GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
 	return 0;
 }
 

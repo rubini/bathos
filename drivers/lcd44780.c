@@ -47,7 +47,7 @@ static int lcd44780_is_busy(struct lcd44780 *lcd, int cmd)
 	gpio_set(lcd->gpio[LCD44780_RW], 1); /* read */
 	gpio_set(lcd->gpio[LCD44780_RS], 0);
 	/* mv D7 temporarily to input mode */
-	gpio_dir(lcd->gpio[LCD44780_D7], 0, 0);
+	gpio_dir(lcd->gpio[LCD44780_D7], GPIO_DIR_IN, 0);
 	gpio_set(lcd->gpio[LCD44780_E], 1);
 	udelay(DELAY_CLK);
 	gpio_set(lcd->gpio[LCD44780_E], 0);
@@ -59,7 +59,7 @@ static int lcd44780_is_busy(struct lcd44780 *lcd, int cmd)
 	gpio_set(lcd->gpio[LCD44780_E], 0);
 	udelay(DELAY_CLK);
 	/* back to output */
-	gpio_dir(lcd->gpio[LCD44780_D7], 1, 0);
+	gpio_dir(lcd->gpio[LCD44780_D7], GPIO_DIR_OUT, 0);
 	return ret;
 }
 
@@ -111,7 +111,7 @@ int lcd44780_init(struct lcd44780 *lcd)
 		if (VERBOSE_LCD44780)
 			printf("%s: use gpio %2i for index %i\n", __func__,
 			       lcd->gpio[i], i);
-		gpio_dir_af(lcd->gpio[i], 1, 0, 0); /* output, value, af */
+		gpio_dir_af(lcd->gpio[i], GPIO_DIR_OUT, 0, GPIO_AF_GPIO);
 	}
 
 	/*

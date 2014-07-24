@@ -34,11 +34,11 @@ struct spi_dev *spi_create(struct spi_dev *dev)
 
 	/* Configure the GPIO pins (pins 4..7 AF1) */
 	for (i = 4; i < 8; i++)
-		gpio_dir_af(i, 0, 0, 1);
+		gpio_dir_af(i, GPIO_DIR_IN, 0, GPIO_AF(1));
 
 	/* Configure the CS GPIO */
 	gpio_set(cfg->gpio_cs, 1);
-	gpio_dir_af(cfg->gpio_cs, 1, 1, 0);
+	gpio_dir_af(cfg->gpio_cs, GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
 
 	/* No interrupts and MSB-first */
 	spcr = (cfg->phase << 3) | (cfg->pol << 4) | (1<<5 /* master */);
@@ -59,7 +59,7 @@ void spi_destroy(struct spi_dev *dev)
 
 	/* De-configure the GPIO pins (pins 4..7, back to gpio */
 	for (i = 4; i < 8; i++)
-		gpio_dir_af(i, 0, 0, 0);
+		gpio_dir_af(i, GPIO_DIR_IN, 0, GPIO_AF_GPIO);
 
 	dev->cfg = NULL;
 	dev->current_freq = 0;
