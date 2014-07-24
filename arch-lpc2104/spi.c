@@ -57,9 +57,9 @@ void spi_destroy(struct spi_dev *dev)
 {
 	int i;
 
-	/* De-configure the GPIO pins (pins 4..7 AF1) */
+	/* De-configure the GPIO pins (pins 4..7, back to gpio */
 	for (i = 4; i < 8; i++)
-		gpio_dir_af(i, 0, 0, 1);
+		gpio_dir_af(i, 0, 0, 0);
 
 	dev->cfg = NULL;
 	dev->current_freq = 0;
