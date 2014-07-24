@@ -6,6 +6,9 @@ config HAS_MEMORY_MODE
 config HAS_GPIO
 	bool
 
+config HAS_SPI
+	bool
+
 choice
 	prompt "Architecture to build for"
 
@@ -22,6 +25,7 @@ config ARCH_LPC2104
 	bool "LPC2104 -- ARM 7"
 	select HAS_MEMORY_MODE
 	select HAS_GPIO
+	select HAS_SPI
 	help
 	  This
 

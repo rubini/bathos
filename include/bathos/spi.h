@@ -6,7 +6,6 @@
 #define __BATHOS_SPI_H__
 
 #include <bathos/types.h>
-#include <arch/spi.h>
 
 /* This is an interface for SPI, only master is supported */
 struct spi_cfg {
@@ -40,12 +39,45 @@ struct spi_dev {
 	int	current_freq;
 };
 
+
+#ifdef CONFIG_HAS_SPI
+#include <arch/spi.h>
+
 extern struct spi_dev *spi_create(struct spi_dev *cfg);
 extern void spi_destroy(struct spi_dev *dev);
 extern int spi_xfer(struct spi_dev *dev,
 		    enum spi_flags flags,
 		    const struct spi_ibuf *ibuf,
 		    const struct spi_obuf *obuf);
+
+#else
+/*
+ * Empty SPI definitions, to allow libraries to be built
+ * (then, clearly, we can't link with those functions)
+ */
+
+extern void __no_spi_code_for_this_architecture__(); /* link error */
+
+static inline struct spi_dev *spi_create(struct spi_dev *cfg)
+{
+	__no_spi_code_for_this_architecture__();
+	return NULL;
+}
+
+static inline void spi_destroy(struct spi_dev *dev)
+{
+	__no_spi_code_for_this_architecture__();
+}
+
+static inline int spi_xfer(struct spi_dev *dev,
+			   enum spi_flags flags,
+			   const struct spi_ibuf *ibuf,
+			   const struct spi_obuf *obuf)
+{
+	__no_spi_code_for_this_architecture__();
+	return 0;
+}
+#endif /* CONFIG_HAS_SPI */
 
 /* Sometimes we want to only read or only write */
 static inline int spi_read(struct spi_dev *dev,
