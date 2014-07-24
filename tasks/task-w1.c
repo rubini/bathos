@@ -1,6 +1,6 @@
 #include <bathos/bathos.h>
 #include <bathos/w1.h>
-#include <arch/gpio.h>
+#include <bathos/gpio.h>
 #include <arch/hw.h>
 
 static int w1_init(void *arg)

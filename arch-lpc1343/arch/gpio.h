@@ -2,6 +2,10 @@
  * GPIO interface for LPC-1343
  * Alessandro Rubini, 2011-2012GNU GPL2 or later
  */
+#ifndef __BATHOS_GPIO_H__
+#error "Please include <bathos/gpio.h>, not <arch/gpio.h>"
+#endif
+
 #ifndef __LPC13_GPIO_H__
 #define __LPC13_GPIO_H__
 #include <bathos/types.h>

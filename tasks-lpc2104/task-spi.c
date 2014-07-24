@@ -1,8 +1,8 @@
 #include <bathos/bathos.h>
 #include <bathos/types.h>
 #include <bathos/spi.h>
+#include <bathos/gpio.h>
 #include <arch/hw.h>
-#include <arch/gpio.h>
 
 /* AD7888 */
 

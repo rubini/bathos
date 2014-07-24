@@ -5,7 +5,7 @@
 #include <bathos/delay.h>
 #include <bathos/jiffies.h>
 #include <bathos/dht11.h>
-#include <arch/gpio.h>
+#include <bathos/gpio.h>
 
 int dht11_init(void *arg)
 {

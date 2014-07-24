@@ -3,7 +3,7 @@
  * Alessandro Rubini, 2009 GNU GPL2 or later
  */
 #include <bathos/bathos.h>
-#include <arch/gpio.h>
+#include <bathos/gpio.h>
 #include <arch/hw.h>
 
 static int led_init(void *unused)

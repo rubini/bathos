@@ -4,7 +4,7 @@
 #include <bathos/bathos.h>
 #include <bathos/lcd44780.h>
 #include <bathos/delay.h>
-#include <arch/gpio.h>
+#include <bathos/gpio.h>
 
 #define DELAY_CLK 2
 

@@ -1,6 +1,6 @@
 #include <bathos/bathos.h>
 #include <bathos/spi.h>
-#include <arch/gpio.h>
+#include <bathos/gpio.h>
 
 #define GPIODC 12
 #define GPIOCS 11

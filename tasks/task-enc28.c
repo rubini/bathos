@@ -1,7 +1,7 @@
 #include <bathos/bathos.h>
 #include <bathos/enc28j60.h>
+#include <bathos/gpio.h>
 #include <arch/spi.h>
-#include <arch/gpio.h>
 
 #ifndef DEBUG_TASK_ENC28
 #define DEBUG_TASK_ENC28 0

@@ -4,7 +4,7 @@
  */
 #include <bathos/types.h>
 #include <bathos/io.h>
-#include <arch/gpio.h>
+#include <bathos/gpio.h>
 
 /*
  * Note that only gpio_dir_af() checks the gpio is valid. Other

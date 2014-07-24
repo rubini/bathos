@@ -2,13 +2,14 @@
  * GPIO interface for LPC-1343
  * Alessandro Rubini, 2011-2012GNU GPL2 or later
  */
+
+#define __LPC13_GPIO_INTERNALS__
+#include <bathos/gpio.h>
+
 #include <bathos/types.h>
 #include <bathos/init.h>
 #include <bathos/io.h>
 #include <arch/hw.h>
-
-#define __LPC13_GPIO_INTERNALS__
-#include <arch/gpio.h>
 
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 

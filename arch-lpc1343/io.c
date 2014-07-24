@@ -5,7 +5,7 @@
 #include <bathos/bathos.h>
 #include <bathos/init.h>
 #include <bathos/io.h>
-#include <arch/gpio.h>
+#include <bathos/gpio.h>
 
 static int timer_setup(void)
 {

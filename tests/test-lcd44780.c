@@ -9,7 +9,7 @@
 #include <bathos/jiffies.h>
 #include <bathos/string.h>
 #include <bathos/lcd44780.h>
-#include <arch/gpio.h>
+#include <bathos/gpio.h>
 
 static struct lcd44780 lcd_instance = {
 	.gpio = {

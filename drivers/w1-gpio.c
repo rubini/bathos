@@ -4,9 +4,9 @@
  */
 #include <bathos/bathos.h>
 #include <bathos/delay.h>
+#include <bathos/gpio.h>
 #define __W1_INTERNAL__
 #include <bathos/w1.h>
-#include <arch/gpio.h>
 
 /* Private methods for acting on bits */
 static inline void set_w1_gpio(int gpio, int value)
