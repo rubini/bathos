@@ -2293,11 +2293,20 @@ This is the current list of drivers:
 
 @item lcd44780
 
-	This is the classical LCD display, typicall sold as 16x2 ASCII
+	This is the classical LCD display, typically sold as 16x2 ASCII
         characters, connected on a 4-bit data bus, plus control signals.
         The driver currently only supports 4-bit mode.  The user must
         tell which GPIO lines are connected to the display. Please see
         @t{tests/test-lcd44780.c} for an example use.
+
+@item dht11
+
+	This is a temperature and humidity sensor. It uses a custom
+        protocol over a single wire, but this means reading requires
+        a whole FIXME milliseconds, using 100% CPU time.  Also, it requires
+        it's own dedicated GPIO wire. The driver is set up as an init
+        and a job function, ready to be inteserted in a Bathos
+        task. As an example use, please see @t{tasks/task-dht11.c}.
 
 @end table
 
