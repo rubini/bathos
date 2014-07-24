@@ -16,6 +16,7 @@ config ARCH_LPC1343
 	bool "LPC-1343 -- Cortex-M3"
 	select HAS_MEMORY_MODE
 	select HAS_GPIO
+	select HAS_SPI
 	help
 	  This architecture builds for LPC1343 and similar processors,
 	  by NXP.  This is the original architecture for Thos.
