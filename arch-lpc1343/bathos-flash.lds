@@ -17,7 +17,7 @@ SECTIONS
 		*(.text)
 	}
 	.rodata : {
-		*(.rodata)
+		*(.rodata*)
 		romcall_begin = .;
 		*(.init0);
 		romcall_end = .;

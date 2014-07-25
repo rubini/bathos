@@ -15,7 +15,7 @@ SECTIONS
 	.text : {
 		*(.text)
 	}
-	.rodata : { *(.rodata) }
+	.rodata : { *(.rodata*) }
 	romcall_begin = .;
 	romcall_end = .;
 	.data : { *(.data) }

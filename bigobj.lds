@@ -1,7 +1,7 @@
 SECTIONS
 {
 	.rodata : {
-		*(.rodata);
+		*(.rodata*);
 		. = ALIGN(8);
 		initcall_begin = .;
 		*(.init1);
