@@ -75,7 +75,7 @@ static void *spi_test(void *arg)
 	return 0;
 }
 
-static struct bathos_task __task t_pwm = {
+static struct bathos_task __task t_spi = {
 	.name = "spi_test", .period = HZ,
 	.init = spi_test_init, .job = spi_test,
 	.release = 15
