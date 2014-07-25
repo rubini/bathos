@@ -7,6 +7,7 @@
 #include <bathos/delay.h>
 #include <bathos/spi.h>
 #include <bathos/gpio.h>
+#include <bathos/jiffies.h>
 #include <bathos/io.h>
 #include <arch/hw.h>
 
@@ -68,8 +69,15 @@ void spi_destroy(struct spi_dev *dev)
 /* Local functions to simplify xfer code */
 static void __spi_wait_busy(void)
 {
-	while( !(regs[REG_SPSR] & 0x80))
-		/* FIXME: timeout */;
+	unsigned long j = jiffies + HZ/10;
+
+	while (1) {
+		if (regs[REG_SPSR] & 0x80)
+			return;
+		if (jiffies >= j)
+			break;
+	}
+	printf("%s: timeout (SPSR = 0x%02x)\n", __func__, (int)regs[REG_SPSR]);
 }
 
 static void __spi_cs(struct spi_dev *dev, int value)
@@ -77,6 +85,7 @@ static void __spi_cs(struct spi_dev *dev, int value)
 	gpio_set(dev->cfg->gpio_cs, value);
 }
 
+/* And the core of it */
 int spi_xfer(struct spi_dev *dev,
 		     enum spi_flags flags,
 		     const struct spi_ibuf *ibuf,
