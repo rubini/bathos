@@ -38,7 +38,7 @@ static const struct spi_obuf ad7888_obuf = {
 /* Test config: SPI0 with configured CS */
 const struct spi_cfg ad7888_config = {
 	.gpio_cs = CONFIG_AD7888_CS_PIN,
-	.freq= HZ / 100,
+	.freq = 250 * 1000, /* 250 kHz so we fit 1msvery slow */
 	.pol = 0,
 	.phase = 0,
 	.devn = 0
