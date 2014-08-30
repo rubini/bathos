@@ -72,6 +72,23 @@ config PRINTF_XINT
        bool
        default !PRINTF_FULL
 
+
+config TASK_AD7888
+	bool "Add a simple task for AD7888 SPI ADC" if HAS_SPI
+	help
+	  This simple tasks reads all 8 channels once per second.
+	  It is meant as an example to be customized for your own needs.
+
+config AD7888_CS_PIN
+	depends on TASK_AD7888
+	int "The GPIO being used as chip select for the AD7888"
+	default 9 if ARCH_LPC2104
+	default 74 if ARCH_LPC1343
+	help
+	  Please choose the GPIO pin. Remeber the port counts 32, so
+	  for expample GPIO_NR(2, 10) (port 2, pin 10) is 74.
+
+
 choice
 	prompt "Memory mode"
 
