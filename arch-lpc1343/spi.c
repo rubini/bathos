@@ -20,6 +20,7 @@
 struct spi_dev *spi_create(struct spi_dev *dev)
 {
 	const struct spi_cfg *cfg = dev->cfg;
+	int freq, div, d1, d2; /* clock divisors */
 	u32 cr;
 
 	if (DEBUG_SPI)
@@ -32,7 +33,32 @@ struct spi_dev *spi_create(struct spi_dev *dev)
 
 	/* Power on the device */
 	regs[REG_AHBCLKCTRL] |= REG_AHBCLKCTRL_SSP;
-	regs[REG_SSPCLKDIV] = 1; /* enable, divide by 1 */
+
+	/*
+	 * We must enable the clock, with a divider in range 1..255.
+	 * Then we hava a prescaler (2..254) and a clock rate (1..256).
+	 * To get somethin meaninful, and not too complex, divide by 1
+	 * here, and calculate the two 8-bit values later
+	 */
+	regs[REG_SSPCLKDIV] = 1;
+
+	/* So, prescaler is 2..254 (only even), try to approximate rate */
+	freq = cfg->freq;
+	if (freq < 1000)
+		freq = 1000; /* 1kHz instead of 0 or invalid negatives */
+	div = (CPU_FREQ + (freq / 2)) / cfg->freq;
+
+	if (freq > CPU_FREQ / 2) {
+		/* go as fast as possible, as user requested more */
+		d1 = 1;
+		d2 = 2;
+	} else {
+		for (d2 = 2; d2 < 254; d2 += 2) {
+			d1 = (div + (d2 / 2)) / d2;
+			if (d1 < 257)
+				break;
+		}
+	}
 
 	/* Reset the device */
 	regs[0x40048004 / 4] = 0; udelay(50); regs[0x40048004 / 4] = 1;
@@ -49,11 +75,10 @@ struct spi_dev *spi_create(struct spi_dev *dev)
 	gpio_dir_af(cfg->gpio_cs, GPIO_DIR_OUT, 1, GPIO_AF_GPIO);
 
 	cr = 7 /* spi, 8 bits */ | (cfg->phase << 7) | (cfg->pol << 6) |
-		(64 << 8 /* FIXME: serial clock rate. Slow... */);
+		(d1 << 8);
 	regs[REG_SSP0CR0] = cr;
 
-	/* FIXME: frequency support is missing */
-	regs[REG_SSP0CPSR] = 128; /* start slow (FIXME) */
+	regs[REG_SSP0CPSR] = d2; /* calculated above */
 
 	regs[REG_SSP0CR1] = 2 /* SSE - enable */;
 
