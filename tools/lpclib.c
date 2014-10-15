@@ -210,6 +210,7 @@ char *lpc_write_c(int fd, char *string, int nrd)
 		fprintf(stderr, "%i: %s", nrd, string);
 
 	strcpy(s, string);
+	usleep(100);
 	if (write(fd, string, i) != i)
 		return NULL;
 	/* read back can be longer, blame the caller if needed */
