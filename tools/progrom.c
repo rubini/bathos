@@ -4,6 +4,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -40,7 +41,7 @@ int main(int argc, char **argv)
 	unsigned long run_addr;
 	char *port, *reply;
 	int fd, i, fsize, ssize, size, pos, nline, clk, verbose;
-	unsigned long check;
+	uint32_t check;
 	struct lpc_dev *dev;
 	FILE *f;
 
@@ -111,7 +112,7 @@ int main(int argc, char **argv)
 
 	/* checksum: the checksum vector is different for arm7 and cortex */
 	{
-		unsigned long *v = (unsigned long *)filebuf;
+		uint32_t *v = (void *)filebuf;
 		v[dev->type->checksum_vector] = check = 0;
 		for (i = 0; i < 8; i++)
 			check += v[i];
@@ -152,7 +153,7 @@ int main(int argc, char **argv)
 			nline++;
 			if (nline && nline%20 == 0) {
 				/* print checksum read OK */
-				sprintf(s, "%li\r\n", check); check = 0;
+				sprintf(s, "%li\r\n", (long)check); check = 0;
 				reply = lpc_write_c(fd, s, 2);
 				V("%s", reply); /* OK Hopefully */
 			}
@@ -209,6 +210,7 @@ int main(int argc, char **argv)
 
 	/* Go to actual code (vector 1, not 0 like on ARM7) */
 	sprintf(s, "G %li %c \r\n", run_addr, dev->type->mode);
+	fprintf(stderr, "--> mode %i %c - %s\n", dev->name, dev->type->mode, s);
 	lpc_write_c(fd, s, 2);
 
 	while(1) {
