@@ -24,48 +24,47 @@ static const u8 odata[] = {
 	0 << 3, 0x00, /* used to retrieva data */
 };
 
-
 static u8 idata[sizeof(odata)];
 
 static struct spi_dev *dev;
-static const struct spi_ibuf ibuf = {
+static const struct spi_ibuf ad7888_ibuf = {
 	.len = sizeof(idata),
 	.buf = idata,
 };
-static const struct spi_obuf obuf = {
+static const struct spi_obuf ad7888_obuf = {
 	.len = sizeof(idata),
 	.buf = odata,
 };
-/* Test config: SPI0 with CS on p0.9 */
-const struct spi_cfg spi_config = {
-	.gpio_cs = GPIO_NR(0,9),
-	.freq= HZ / 100,
+/* Test config: SPI0 with configured CS */
+const struct spi_cfg ad7888_config = {
+	.gpio_cs = CONFIG_AD7888_CS_PIN,
+	.freq = 250 * 1000, /* 250 kHz so we fit 1msvery slow */
 	.pol = 0,
 	.phase = 0,
 	.devn = 0
 };
 
-static struct spi_dev spi_device = {
-	.cfg = &spi_config,
+static struct spi_dev ad7888_device = {
+	.cfg = &ad7888_config,
 };
 
 static struct spi_dev *dev;
 
-static int spi_test_init(void *unused)
+static int ad7888_init(void *unused)
 {
-	dev = spi_create(&spi_device);
+	dev = spi_create(&ad7888_device);
 	if (!dev)
 		return -1;
 
 	return 0;
 }
 
-static void *spi_test(void *arg)
+static void *ad7888_acq(void *arg)
 {
 	int i;
 
 	/* At each loop, get the data and printk it */
-	spi_xfer(dev, SPI_F_DEFAULT, &ibuf, &obuf);
+	spi_xfer(dev, SPI_F_DEFAULT, &ad7888_ibuf, &ad7888_obuf);
 
 	for (i = 0; i < 8; i++) {
 		printf("%03x%c",
@@ -75,8 +74,8 @@ static void *spi_test(void *arg)
 	return 0;
 }
 
-static struct bathos_task __task t_spi = {
-	.name = "spi_test", .period = HZ,
-	.init = spi_test_init, .job = spi_test,
+static struct bathos_task __task t_ad7888 = {
+	.name = "ad7888", .period = HZ,
+	.init = ad7888_init, .job = ad7888_acq,
 	.release = 15
 };

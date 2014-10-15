@@ -1,5 +1,5 @@
 
-TASK-y = task-uart.o arch/task-led.o arch/task-pwm.o arch/task-spi.o
+TASK-y = task-uart.o arch/task-led.o arch/task-pwm.o
 
 # Library
 LIBARCH = $(ADIR)/libarch.a

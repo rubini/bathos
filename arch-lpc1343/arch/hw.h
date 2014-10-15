@@ -26,6 +26,7 @@
 #define REG_U0FDR		(0x40008028 / 4) /* fractional divider */
 
 /* Clock dividers */
+#define REG_SSPCLKDIV		(0x40048094 / 4)
 #define REG_UARTCLKDIV		(0x40048098 / 4)
 
 

@@ -21,6 +21,9 @@ include $(ADIR)/Makefile
 # The arch may have its choice, or you can override on the command line
 TASK-y ?= task-uart.o arch/task-led.o arch/task-pwm.o
 
+# extra tasks according to configurations
+TASK-$(CONFIG_TASK_AD7888) += task-ad7888.o
+
 # Cross compiling:
 AS              = $(CROSS_COMPILE)as
 LD              = $(CROSS_COMPILE)ld
