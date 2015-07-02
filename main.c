@@ -21,7 +21,7 @@ void __attribute__((noreturn)) bathos_main(void)
 		struct bathos_task *t;
 
 		for (t = p = __task_begin; p < __task_end; p++)
-			if (p->release < t->release)
+			if (time_before(p->release, t->release))
 				t = p;
 		while (time_before(jiffies, t->release))
 			;
